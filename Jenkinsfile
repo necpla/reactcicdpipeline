@@ -3,6 +3,7 @@ pipeline {
 
     environment {
         DOCKER_IMAGE = 'necpla/reactcicdpipeline:latest'
+        CONTAINER_NAME = 'reactcicdpipeline'
     }
 
     tools {
@@ -38,7 +39,11 @@ pipeline {
 
         stage('Run Container (Optional)') {
             steps {
-                bat "docker run -d -p 3000:80 --name reactcicdpipeline ${DOCKER_IMAGE}"
+                bat '''
+                    docker stop %CONTAINER_NAME% || echo "Container not running"
+                    docker rm %CONTAINER_NAME% || echo "Container not found"
+                    docker run -d -p 3000:80 --name %CONTAINER_NAME% %DOCKER_IMAGE%
+                '''
             }
         }
     }
