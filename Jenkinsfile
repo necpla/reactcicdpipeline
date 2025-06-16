@@ -2,9 +2,8 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_IMAGE = "necpla/reactcicdpipeline:${env.BRANCH_NAME}"
+        DOCKER_IMAGE = "necpla/reactcicdpipeline-${env.BRANCH_NAME}"
         CONTAINER_NAME = "reactcicdpipeline-${env.BRANCH_NAME}"
-        PORT = "${env.BRANCH_NAME == 'main' ? '3000' : '3001'}" // prod:3000, staging:3001
     }
 
     tools {
@@ -20,6 +19,7 @@ pipeline {
 
         stage('Install Dependencies') {
             steps {
+                // Use 'sh' if on Linux agents, 'bat' for Windows
                 bat 'npm install'
             }
         }
@@ -46,13 +46,19 @@ pipeline {
                 }
             }
             steps {
-                echo "🔁 Deploying branch '${env.BRANCH_NAME}' to ${env.BRANCH_NAME == 'main' ? 'Production' : 'Staging'}"
+                script {
+                    def PORT = (env.BRANCH_NAME == 'main') ? '3000' : '3001'
+                    def ENV_NAME = (env.BRANCH_NAME == 'main') ? 'Production' : 'Staging'
 
-                bat """
+                    echo "🔁 Deploying branch '${env.BRANCH_NAME}' to ${ENV_NAME}"
+
+                    // Use triple double-quotes for string interpolation in bat block
+                    bat """
                     docker stop ${CONTAINER_NAME} || echo Not running
                     docker rm ${CONTAINER_NAME} || echo Not found
                     docker run -d -p ${PORT}:80 --name ${CONTAINER_NAME} ${DOCKER_IMAGE}
-                """
+                    """
+                }
             }
         }
     }
