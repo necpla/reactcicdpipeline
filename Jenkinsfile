@@ -2,29 +2,29 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_IMAGE = 'necpla/reactcicdpipeline:latest'  
+        DOCKER_IMAGE = 'necpla/reactcicdpipeline:latest'
     }
 
     tools {
-        nodejs 'NodeJS_20'  // Ensure this is defined in Jenkins global tools
+        nodejs 'NodeJS_20'
     }
 
     stages {
         stage('Checkout Code') {
             steps {
-                git 'https://github.com/necpla/reactcicdpipeline.git'  // Replace with your repo
+                git 'https://github.com/necpla/reactcicdpipeline.git'
             }
         }
 
         stage('Install Dependencies') {
             steps {
-                sh 'npm install'
+                bat 'npm install'
             }
         }
 
         stage('Build React App') {
             steps {
-                sh 'npm run build'
+                bat 'npm run build'
             }
         }
 
@@ -36,12 +36,9 @@ pipeline {
             }
         }
 
-        // Optional: Run container locally for testing
         stage('Run Container (Optional)') {
             steps {
-                script {
-                    sh 'docker run -d -p 3000:80 --name reactcicdpipeline ${DOCKER_IMAGE}'
-                }
+                bat "docker run -d -p 3000:80 --name reactcicdpipeline ${DOCKER_IMAGE}"
             }
         }
     }
