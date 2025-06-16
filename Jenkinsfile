@@ -2,8 +2,9 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_IMAGE = 'necpla/reactcicdpipeline:latest'
-        CONTAINER_NAME = 'reactcicdpipeline'
+        DOCKER_IMAGE = "necpla/reactcicdpipeline:${env.BRANCH_NAME}"
+        CONTAINER_NAME = "reactcicdpipeline-${env.BRANCH_NAME}"
+        PORT = "${env.BRANCH_NAME == 'main' ? '3000' : '3001'}" // prod:3000, staging:3001
     }
 
     tools {
@@ -11,9 +12,9 @@ pipeline {
     }
 
     stages {
-        stage('Checkout Code') {
+        stage('Checkout') {
             steps {
-                git 'https://github.com/necpla/reactcicdpipeline.git'
+                checkout scm
             }
         }
 
@@ -37,23 +38,31 @@ pipeline {
             }
         }
 
-        stage('Run Container (Optional)') {
+        stage('Deploy to Environment') {
+            when {
+                anyOf {
+                    branch 'main'
+                    branch 'dev'
+                }
+            }
             steps {
-                bat '''
-                    docker stop %CONTAINER_NAME% || echo "Container not running"
-                    docker rm %CONTAINER_NAME% || echo "Container not found"
-                    docker run -d -p 3000:80 --name %CONTAINER_NAME% %DOCKER_IMAGE%
-                '''
+                echo "🔁 Deploying branch '${env.BRANCH_NAME}' to ${env.BRANCH_NAME == 'main' ? 'Production' : 'Staging'}"
+
+                bat """
+                    docker stop ${CONTAINER_NAME} || echo Not running
+                    docker rm ${CONTAINER_NAME} || echo Not found
+                    docker run -d -p ${PORT}:80 --name ${CONTAINER_NAME} ${DOCKER_IMAGE}
+                """
             }
         }
     }
 
     post {
         success {
-            echo '✅ Dockerized React Counter App pipeline completed.'
+            echo "✅ '${env.BRANCH_NAME}' branch pipeline completed successfully."
         }
         failure {
-            echo '❌ Something went wrong in the pipeline.'
+            echo "❌ '${env.BRANCH_NAME}' branch pipeline failed."
         }
     }
 }
