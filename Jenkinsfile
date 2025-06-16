@@ -39,16 +39,11 @@ pipeline {
         }
 
         stage('Deploy to Environment') {
-            when {
-                anyOf {
-                    branch 'main'
-                    branch 'dev'
-                }
-            }
+            
             steps {
                 script {
-                    def PORT = (env.BRANCH_NAME == 'main') ? '3000' : '3001'
-                    def ENV_NAME = (env.BRANCH_NAME == 'main') ? 'Production' : 'Staging'
+                    def PORT = (env.BRANCH_NAME == 'master') ? '3000' : '3001'
+                    def ENV_NAME = (env.BRANCH_NAME == 'master') ? 'Production' : 'Staging'
 
                     echo "🔁 Deploying branch '${env.BRANCH_NAME}' to ${ENV_NAME}"
 
