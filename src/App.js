@@ -7,7 +7,7 @@ function App() {
       <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
         <p>
-          Edit <code>src/App.js</code> and save qto 11.
+          Edit <code>src/App.js</code> and save q-to 11.
         </p>
         <a
           className="App-link"
