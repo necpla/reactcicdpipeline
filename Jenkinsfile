@@ -19,13 +19,13 @@ pipeline {
 
         stage('Install Dependencies') {
             steps {
-                bat 'npm install'
+                sh 'npm install'
             }
         }
 
         stage('Build React App') {
             steps {
-                bat 'npm run build'
+                sh 'npm run build'
             }
         }
 
@@ -46,8 +46,8 @@ pipeline {
 
                     echo "🔁 Deploying branch '${env.BRANCH_NAME}' to ${ENV_NAME}"
 
-                    // Use triple double-quotes for string interpolation in bat block
-                    bat """
+                    // Use triple double-quotes for string interpolation in sh block
+                    sh """
                     docker stop ${CONTAINER_NAME} || echo Not running
                     docker rm ${CONTAINER_NAME} || echo Not found
                     docker run -d -p ${PORT}:80 --name ${CONTAINER_NAME} ${DOCKER_IMAGE}
