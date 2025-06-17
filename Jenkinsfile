@@ -19,7 +19,6 @@ pipeline {
 
         stage('Install Dependencies') {
             steps {
-                // Use 'sh' if on Linux agents, 'bat' for Windows
                 bat 'npm install'
             }
         }
@@ -27,6 +26,12 @@ pipeline {
         stage('Build React App') {
             steps {
                 bat 'npm run build'
+            }
+        }
+
+        stage('Test React App') {
+            steps {
+                bat 'npm test'
             }
         }
 
@@ -59,10 +64,10 @@ pipeline {
 
     post {
         success {
-            echo "✅ '${env.BRANCH_NAME}' branch pipeline completed successfully."
+            echo "'${env.BRANCH_NAME}' branch pipeline completed successfully."
         }
         failure {
-            echo "❌ '${env.BRANCH_NAME}' branch pipeline failed."
+            echo "'${env.BRANCH_NAME}' branch pipeline failed."
         }
     }
 }
