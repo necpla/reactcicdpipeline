@@ -2,8 +2,8 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_IMAGE = "necpla/reactcicdpipeline-${env.BRANCH_NAME}"
-        CONTAINER_NAME = "reactcicdpipeline-${env.BRANCH_NAME}"
+        DOCKER_IMAGE = "necpla/reactcicdpipeline"
+        CONTAINER_NAME = "reactcicdpipeline"
     }
 
     tools {
@@ -41,16 +41,13 @@ pipeline {
         stage('Deploy to Environment') {
             steps {
                 script {
-                    def PORT = (env.BRANCH_NAME == 'master') ? '3000' : '3001'
-                    def ENV_NAME = (env.BRANCH_NAME == 'master') ? 'Production' : 'Staging'
-
-                    echo "🔁 Deploying branch '${env.BRANCH_NAME}' to ${ENV_NAME}"
+                  
 
                     // Use triple double-quotes for string interpolation in sh block
                     sh """
                     docker stop ${CONTAINER_NAME} || echo Not running
                     docker rm ${CONTAINER_NAME} || echo Not found
-                    docker run -d -p ${PORT}:80 --name ${CONTAINER_NAME} ${DOCKER_IMAGE}
+                    docker run -d -p 3000:80 --name ${CONTAINER_NAME} ${DOCKER_IMAGE}
                     """
                 }
             }
