@@ -39,7 +39,6 @@ pipeline {
         }
 
         stage('Deploy to Environment') {
-            
             steps {
                 script {
                     def PORT = (env.BRANCH_NAME == 'master') ? '3000' : '3001'
