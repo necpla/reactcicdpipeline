@@ -25,13 +25,13 @@ pipeline {
 
         stage('Build React App') {
             steps {
-                bat 'npm run build'
+                bat 'set CI=true npm run build'
             }
         }
 
         stage('Test React App') {
             steps {
-                bat 'set CI=true && npm test'
+                bat 'npm test'
             }
         }
 
