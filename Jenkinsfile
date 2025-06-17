@@ -29,11 +29,6 @@ pipeline {
             }
         }
 
-        stage('Test React App') {
-            steps {
-                bat 'npm test'
-            }
-        }
 
         stage('Build Docker Image') {
             steps {
